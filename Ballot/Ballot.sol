@@ -48,7 +48,8 @@ contract Ballot {
 
     // Give `voter` the right to vote on this ballot.
     // May only be called by `chairperson`.
-    function giveRightToVote(address voter) external {
+    // Improvement: Take voter parameter as a address array to barch process.
+    function giveRightToVote(address[] calldata voter) external {
         // If the first argument of `require` evaluates
         // to `false`, execution terminates and all
         // changes to the state and to Ether balances
@@ -63,12 +64,17 @@ contract Ballot {
             msg.sender == chairperson,
             "Only chairperson can give right to vote."
         );
-        require(
-            !voters[voter].voted,
-            "The voter already voted."
-        );
-        require(voters[voter].weight == 0);
-        voters[voter].weight = 1;
+        
+        // Improvement: Loop each address and give them vote right.
+        for (uint i; i < voter.length; i++){
+            require(
+                !voters[voter[i]].voted,
+                "The voter already voted."
+            );
+            require(voters[voter[i]].weight == 0);
+            voters[voter[i]].weight = 1;
+        }
+        
     }
 
     /// Delegate your vote to the voter `to`.
